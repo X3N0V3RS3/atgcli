@@ -1,5 +1,6 @@
 # atgcli
-A command line interface tool for Veeder Root Automated Tank Guages comes with and Three modes
+A command line interface tool for Veeder Root Automated Tank Guages that sends commands to each IP Address
+in a list and comes with Three modes
 
 Usage:
 Default: Runs a basic GetInventory Request and sends data back
