@@ -1,6 +1,7 @@
 import socket,sys,os,time,threading
 
-print('''ATG Client''')
+print('''ATG Client
+       Script written by X3N0V3RS3''')
 print('''Command Examples 
          I20100 = Get In Tank Inventory
          I10100 = System Status Report
