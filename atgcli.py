@@ -1,4 +1,4 @@
-import socket,sys,os,time,threading
+import socket, time, threading
 
 print('''ATG Client
        Script written by X3N0V3RS3''')
@@ -14,81 +14,79 @@ print('''Command Examples
 
 #----------------------------------------------
 
-def defaultrecon():
-      s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-      port = 10001
-      s.connect((atglist[i], port))
-      messagecode = "I20100"
-      payload = ('\x01' + messagecode + '\n').encode('ascii')
-      time.sleep(1) 
-      s.sendall(payload)
-      time.sleep(1)
-      x = s.recv(1024)
-      print(atglist[i], x.split())
-      s.close
+# Used to run function 201 on a given ATG system.
+def default_recon(ip: str, port: int) -> None:
+      atg_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      atg_socket.connect((ip, port))
 
-def info():
-      s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-      port = 10001
-      s.connect((atglist[i], port))
-      payload = ('\x01' + "I" + messagecode + '\n').encode('ascii')
-      time.sleep(1) 
-      s.sendall(payload)
-      time.sleep(1)
-      x = s.recv(1024)
-      print(atglist[i], x.split())
-      s.close
+      # Passing payload with start of header (CTRL + A) and function 201.
+      payload = (b'\x01I20100')
+      atg_socket.sendall(payload)
 
+      time.sleep(1)
 
-def set():
-      s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-      port = 10001
-      s.connect((atglist[i], port))
-      payload = ('\x01' + "s" + messagecode + '\n').encode('ascii')
-      time.sleep(1) 
-      s.sendall(payload)
+      response = atg_socket.recv(1024)
+      print(ip, response.split())
+
+      atg_socket.close
+
+# Used to run any kind of function.
+def execute(ip: str, port: int, message_code: str) -> None:
+      atg_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      atg_socket.connect((ip, port))
+
+      # Passing payload with start of header (CTRL + A) and user submitted message code.
+      payload = ('\x01' + message_code).encode('ascii')
+      atg_socket.sendall(payload)
+
       time.sleep(1)
-      x = s.recv(1024)
-      print(atglist[i], x.split())
-      payload2 = ('\x01' + "I" + messagecode + '\n').encode('ascii')
-      time.sleep(1)
-      s.sendall(payload2)
-      time.sleep(1)
-      print(atglist[i], x.split())
-      s.close
+
+      response = atg_socket.recv(1024)
+      print(ip, response.split())
+
+      atg_socket.close
+
 #---------------------------------------------
 
-#list variable
-i = 0
+atg_list = []
+port = 10001 # Usual port for these ATG systems.
 
-atglist = []
+# Prompt user for mode, convert to lowercase to ensure that uppercase commands aren't ignored.
+while True:
+   mode = input("Select mode: ").lower()
 
-mode = input("select mode :")
+   match mode:
+       case "":
+           mode = "default"
+           break
+       case "default":
+           break
+       case "execute":
+           # If execute mode is being used, prompt user for the function they want to execute.
+           message_code = str(input("Enter function code to send: "))
+           break
+       case _:
+           # If the mode is not one of the listed modes or empty, retry.
+           print("Invalid mode. Please type in 'default' or 'execute' as the mode.")
+           continue
 
-if mode != "default": 
-   messagecode = str(input("Enter MSG code to send :"))
-
-
-#Station IP List  
+# Run through text file with IP addresses and store in atglist array.
 with open("atglist.txt", 'r') as ip:
   for line in ip:
      for addr in line.split():
-           atglist.append(addr)
-           if mode == "default" or "":
-              bot = threading.Thread(target=defaultrecon)
-              time.sleep(1)
-              bot.start()
-              bot.join()
-              i+=1
-           elif mode == "info":
-              bot = threading.Thread(target=info)
-              time.sleep(1)
-              bot.start()
-              bot.join()
-              i+=1
-           elif mode == "set":
-              bot = threading.Thread(target=set)
-              time.sleep(1)
-              bot.start()
-              bot.join()
-              i+=1
+           atg_list.append(addr)
+
+# Remotely connect to each IP and run specified commands as stipulated by the mode.
+for ip in atg_list:
+
+   if mode == "default":
+      bot = threading.Thread(target=default_recon, args=(ip, port))
+      time.sleep(1)
+      bot.start()
+      bot.join()
+
+   if mode == "execute":
+      bot = threading.Thread(target=execute, args=(ip, port, message_code))
+      time.sleep(1)
+      bot.start()
+      bot.join()
