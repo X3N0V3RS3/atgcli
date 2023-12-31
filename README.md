@@ -1,15 +1,16 @@
 # atgcli
-A command line interface tool for Veeder Root Automated Tank Guages that sends commands to each IP Address
-in a list and comes with Three modes
+A command line interface tool for Veeder Root Automated Tank Gauges that sends commands to each IP Address in a list and comes with two modes.
 
-Usage:
-Default: Runs a basic GetInventory Request and sends data back
-Info: Runs any info gathering command for example: I20100, I40100 I60100 (check the manual)
-Set: Runs any reconfiguration command for example: s60200Gas Station(Changes name) s601000(Turns off all Tank configurations)
+## Commands
 
-Put all Target IP Addresses in atglist.txt
+For information about the functions that the Veeder-Root automatic tank gauge systems take, please refer to https://cdn.chipkin.com/files/liz/576013-635.pdf.
 
-Link to the Manual:https://cdn.chipkin.com/files/liz/576013-635.pdf
-I = Info and s = Set 
+## Usage
 
-This tool can also be run alongside Proxychains for Pentesting and Anonimity Purposes
+You will first want to download this repository and enter target IP addresses into ``atglist.txt``. Once you have done this, run ``atgcli.py``.
+
+You will be prompted to select a mode. There are two modes you can use this CLI tool with:
+- Default: Runs a basic Get Inventory Request and sends data back as bytecode.
+- Execute: Runs a user-defined function and sends it back as bytecode.
+
+Once you have selected a mode, the program should carry out that process for all the targets you provided. This tool can also be run alongside Proxychains for pentesting and anonimity purposes.
